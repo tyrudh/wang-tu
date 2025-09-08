@@ -7,6 +7,8 @@ spring:
     name: picture-backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 12345678
     url: jdbc:mysql://localhost:3306/wang-picture
 mybatis-plus:
   configuration:

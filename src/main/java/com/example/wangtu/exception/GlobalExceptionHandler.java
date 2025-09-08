@@ -18,6 +18,13 @@ public class GlobalExceptionHandler {
         log.error("BusinessException: ", businessException);
         return ResultUtils.error(businessException.getCode(), businessException.getMessage());
     }
+    /** 
+     * @description: 测试返回值 
+     * @param: e 
+     * @return: com.example.wangtu.common.BaseResponse<?> 
+     * @author wang
+     * @date:  21:32
+     */  
     //更常见的异常
     @ExceptionHandler(RuntimeException.class)
     public BaseResponse<?> businessExceptionHandler(RuntimeException e) {
