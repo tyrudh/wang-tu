@@ -10,12 +10,10 @@ import com.example.wangtu.constant.UserConstant;
 import com.example.wangtu.exception.BusinessException;
 import com.example.wangtu.exception.ErrorCode;
 import com.example.wangtu.exception.ThrowUtils;
-import com.example.wangtu.model.dto.picture.PictureEditRequest;
-import com.example.wangtu.model.dto.picture.PictureQueryRequest;
-import com.example.wangtu.model.dto.picture.PictureUpdateRequest;
-import com.example.wangtu.model.dto.picture.PictureUploadRequest;
+import com.example.wangtu.model.dto.picture.*;
 import com.example.wangtu.model.entity.Picture;
 import com.example.wangtu.model.entity.User;
+import com.example.wangtu.model.enums.PictureReviewStatusEnum;
 import com.example.wangtu.model.vo.PictureTagCategory;
 import com.example.wangtu.model.vo.PictureVO;
 import com.example.wangtu.service.PictureService;
@@ -48,7 +46,7 @@ public class PictureController {
     private UserService userService;
 
     @PostMapping("/upload")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+//    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<PictureVO> uploadPicture(
             @RequestPart("file") MultipartFile multipartFile,
             PictureUploadRequest pictureUploadRequest,
@@ -86,7 +84,7 @@ public class PictureController {
      */
     @PostMapping("/update")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest) {
+    public BaseResponse<Boolean> updatePicture(@RequestBody PictureUpdateRequest pictureUpdateRequest,HttpServletRequest request) {
         if (pictureUpdateRequest == null || pictureUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -101,6 +99,10 @@ public class PictureController {
         long id = pictureUpdateRequest.getId();
         Picture oldPicture = pictureService.getById(id);
         ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
+        // 补充审核参数
+        User loginUser = userService.getLoginUser(request);
+        // 补充审核参数
+        pictureService.fillReviewParams(picture, loginUser);
         // 操作数据库
         boolean result = pictureService.updateById(picture);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -158,6 +160,8 @@ public class PictureController {
         long size = pictureQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        // 普通用户默认只能看到审核通过的图片
+        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
         // 查询数据库
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
                 pictureService.getQueryWrapper(pictureQueryRequest));
@@ -183,6 +187,8 @@ public class PictureController {
         // 数据校验
         pictureService.validPicture(picture);
         User loginUser = userService.getLoginUser(request);
+        // 补充审核参数
+        pictureService.fillReviewParams(picture, loginUser);
         // 判断是否存在
         long id = pictureEditRequest.getId();
         Picture oldPicture = pictureService.getById(id);
@@ -204,6 +210,15 @@ public class PictureController {
         pictureTagCategory.setTagList(tagList);
         pictureTagCategory.setCategoryList(categoryList);
         return ResultUtils.success(pictureTagCategory);
+    }
+    // 图片审核
+    @PostMapping("/review")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> doPictureReview(@RequestBody PictureReviewRequest pictureReviewRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(pictureReviewRequest == null, ErrorCode.PARAMS_ERROR);
+        pictureService.doPictureReview(pictureReviewRequest, userService.getLoginUser(request));
+        return ResultUtils.success(true);
+
     }
 
 }

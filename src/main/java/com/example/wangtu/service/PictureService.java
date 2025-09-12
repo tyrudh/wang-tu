@@ -3,6 +3,7 @@ package com.example.wangtu.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.wangtu.model.dto.picture.PictureQueryRequest;
+import com.example.wangtu.model.dto.picture.PictureReviewRequest;
 import com.example.wangtu.model.dto.picture.PictureUploadRequest;
 import com.example.wangtu.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -34,4 +35,20 @@ public interface PictureService extends IService<Picture> {
 
     // 校验图片信息
     void validPicture(Picture picture);
+
+    /**
+     * 图片审核
+     *
+     * @param pictureReviewRequest
+     * @param loginUser
+     */
+    void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
+
+    /**
+     * 填充图片审核信息
+     *
+     * @param picture
+     * @param loginUser
+     */
+    void fillReviewParams(Picture picture, User loginUser);
 }
