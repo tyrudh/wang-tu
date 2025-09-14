@@ -1,4 +1,4 @@
-package com.example.wangtu.manager;
+package com.example.wangtu.manager.upload;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
@@ -19,10 +19,10 @@ import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.ciModel.persistence.ImageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
@@ -32,13 +32,12 @@ import java.util.List;
 /**
  * @author wang
  * @version 1.0
- * @description: 已废弃，改为使用upload模版方法上传
+ * @description: TODO
  * @date 2025/9/10 13:38
  */
 @Service
 @Slf4j
-@Deprecated
-public  class FileManager {
+public abstract class PictureUploadTemplate{
 
     @Resource
     private CosClientConfig cosClientConfig;
@@ -46,13 +45,14 @@ public  class FileManager {
     @Resource
     private CosManager cosManager;
 
-    public UploadPictureResult uploadPicture(MultipartFile multipartFile,String uploadPathPrefix) {
+    public UploadPictureResult uploadPicture(Object inputSource,String uploadPathPrefix) {
         //校验图片
-        validPicture(multipartFile);
+        validPicture(inputSource);
 
         //图片上传地址
         String uuid = RandomUtil.randomString(16);
-        String originFilename = multipartFile.getOriginalFilename();
+        // todo
+        String originFilename = getOriginalFilename(inputSource);
         String uploadFilename = String.format("%s_%s.%s", DateUtil.formatDate(new Date()), uuid,
                 FileUtil.getSuffix(originFilename));
         String uploadPath = String.format("/%s/%s", uploadPathPrefix, uploadFilename);
@@ -62,23 +62,12 @@ public  class FileManager {
         try {
             // 创建临时文件
             file = File.createTempFile(uploadPath, null);
-            multipartFile.transferTo(file);
+            // todo处理文件来源
+            processFile(inputSource,file);
             // 上传图片
             PutObjectResult putObjectResult = cosManager.putPictureObject(uploadPath, file);
             ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
-            // 封装返回结果
-            UploadPictureResult uploadPictureResult = new UploadPictureResult();
-            int picWidth = imageInfo.getWidth();
-            int picHeight = imageInfo.getHeight();
-            double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
-            uploadPictureResult.setPicName(FileUtil.mainName(originFilename));
-            uploadPictureResult.setPicWidth(picWidth);
-            uploadPictureResult.setPicHeight(picHeight);
-            uploadPictureResult.setPicScale(picScale);
-            uploadPictureResult.setPicFormat(imageInfo.getFormat());
-            uploadPictureResult.setPicSize(FileUtil.size(file));
-            uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + uploadPath);
-            return uploadPictureResult;
+            return buildResult(imageInfo, originFilename, file, uploadPath);
         } catch (Exception e) {
             log.error("图片上传到对象存储失败", e);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
@@ -88,24 +77,20 @@ public  class FileManager {
         }
     }
 
-    private void validPicture(MultipartFile multipartFile) {
-        ThrowUtils.throwIf(multipartFile == null, ErrorCode.PARAMS_ERROR,"文件不能为空");
-        //校验文件大小
-        ThrowUtils.throwIf(multipartFile.getSize() > 1024 * 1024 * 10, ErrorCode.PARAMS_ERROR,"文件大小不能超过5M");
-        //校验文件后缀
-        String fileName = FileUtil.getSuffix(multipartFile.getOriginalFilename());
-        //允许上床的文件后缀列表
-        final List<String> fileSuffixList = Arrays.asList("png", "jpg", "jpeg", "gif");
-        if (!fileSuffixList.contains(fileName)) {
-            throw new BusinessException(ErrorCode.PARAMS_ERROR,"文件格式错误");
-        }
+    /**
+     * 处理文件来源
+     */
+    protected abstract void processFile(Object inputSource,File file) throws IOException;
 
+    /**
+     * 获取原始文件名
+     */
+    protected abstract String getOriginalFilename(Object inputSource) ;
 
-
-
-    }
-
-
+    /**
+     * 校验图片
+     */
+    protected abstract void validPicture(Object inputSource);
 
 
     /**
@@ -147,18 +132,7 @@ public  class FileManager {
             PutObjectResult putObjectResult = cosManager.putPictureObject(uploadPath, file);
             ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
             // 封装返回结果
-            UploadPictureResult uploadPictureResult = new UploadPictureResult();
-            int picWidth = imageInfo.getWidth();
-            int picHeight = imageInfo.getHeight();
-            double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
-            uploadPictureResult.setPicName(FileUtil.mainName(originFilename));
-            uploadPictureResult.setPicWidth(picWidth);
-            uploadPictureResult.setPicHeight(picHeight);
-            uploadPictureResult.setPicScale(picScale);
-            uploadPictureResult.setPicFormat(imageInfo.getFormat());
-            uploadPictureResult.setPicSize(FileUtil.size(file));
-            uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + uploadPath);
-            return uploadPictureResult;
+            return buildResult(imageInfo, originFilename, file, uploadPath);
         } catch (Exception e) {
             log.error("图片上传到对象存储失败", e);
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "上传失败");
@@ -169,12 +143,12 @@ public  class FileManager {
     }
 
     /**
-     * @Description: 校验通过url下载的图片
-     * @Param: [fileUrl]
-     * @return: void
-     * @Author: trudh
-     * @Date: 2025/9/13
-     **/
+    * @Description: 校验通过url下载的图片
+    * @Param: [fileUrl]
+    * @return: void
+    * @Author: trudh
+    * @Date: 2025/9/13
+    **/
     private void validPicture(String fileUrl){
         // 校验非空
         ThrowUtils.throwIf(StrUtil.isBlank(fileUrl), ErrorCode.PARAMS_ERROR,"文件地址不能为空");
@@ -228,6 +202,30 @@ public  class FileManager {
 
 
     }
+
+    /**
+     * @Description: 封装返回对象
+     * @Param: [imageInfo, originFilename, file, uploadPath]
+     * @return: com.example.wangtu.model.dto.file.UploadPictureResult
+     * @Author: trudh
+     * @Date: 2025/9/13
+     **/
+    private UploadPictureResult buildResult(ImageInfo imageInfo, String originFilename, File file, String uploadPath) {
+        // 封装返回结果
+        UploadPictureResult uploadPictureResult = new UploadPictureResult();
+        int picWidth = imageInfo.getWidth();
+        int picHeight = imageInfo.getHeight();
+        double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
+        uploadPictureResult.setPicName(FileUtil.mainName(originFilename));
+        uploadPictureResult.setPicWidth(picWidth);
+        uploadPictureResult.setPicHeight(picHeight);
+        uploadPictureResult.setPicScale(picScale);
+        uploadPictureResult.setPicFormat(imageInfo.getFormat());
+        uploadPictureResult.setPicSize(FileUtil.size(file));
+        uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + uploadPath);
+        return uploadPictureResult;
+    }
+
 
 }
 
