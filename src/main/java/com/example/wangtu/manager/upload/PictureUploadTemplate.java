@@ -1,5 +1,6 @@
 package com.example.wangtu.manager.upload;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.NumberUtil;
@@ -16,7 +17,9 @@ import com.example.wangtu.exception.ThrowUtils;
 import com.example.wangtu.manager.CosManager;
 import com.example.wangtu.model.dto.file.UploadPictureResult;
 import com.qcloud.cos.model.PutObjectResult;
+import com.qcloud.cos.model.ciModel.persistence.CIObject;
 import com.qcloud.cos.model.ciModel.persistence.ImageInfo;
+import com.qcloud.cos.model.ciModel.persistence.ProcessResults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +69,23 @@ public abstract class PictureUploadTemplate{
             processFile(inputSource,file);
             // 上传图片
             PutObjectResult putObjectResult = cosManager.putPictureObject(uploadPath, file);
+            // 获取到图片信息对象
             ImageInfo imageInfo = putObjectResult.getCiUploadResult().getOriginalInfo().getImageInfo();
+            // 获取图片处理结果
+            ProcessResults processResults = putObjectResult.getCiUploadResult().getProcessResults();
+            List<CIObject> objectList = processResults.getObjectList();
+            if (CollUtil.isNotEmpty(objectList)) {
+                // 获取压缩之后的图片信息，以及缩略图信息
+                CIObject compressedCiobject = objectList.get(0);
+                // 缩略图默认等于原图
+                CIObject thumbnailCiObject = compressedCiobject;
+
+                if (objectList.size() > 1) {
+                    thumbnailCiObject = objectList.get(1);
+                }
+                // 封装压缩图的返回结果
+                return buildResult(originFilename,compressedCiobject,thumbnailCiObject);
+            }
             return buildResult(imageInfo, originFilename, file, uploadPath);
         } catch (Exception e) {
             log.error("图片上传到对象存储失败", e);
@@ -76,7 +95,32 @@ public abstract class PictureUploadTemplate{
             this.deleteTempFile(file);
         }
     }
+    /**
+    * @Description: 封装返回结果
+    * @Param: [originFilename, compressedCiObject]
+    * @return: com.example.wangtu.model.dto.file.UploadPictureResult
+    * @Author: trudh
+    * @Date: 2025/9/15
+    **/
 
+    private UploadPictureResult buildResult(String originFilename, CIObject compressedCiObject,CIObject thumbnailCiObject) {
+        UploadPictureResult uploadPictureResult = new UploadPictureResult();
+        int picWidth = compressedCiObject.getWidth();
+        int picHeight = compressedCiObject.getHeight();
+        double picScale = NumberUtil.round(picWidth * 1.0 / picHeight, 2).doubleValue();
+        uploadPictureResult.setPicName(FileUtil.mainName(originFilename));
+        uploadPictureResult.setPicWidth(picWidth);
+        uploadPictureResult.setPicHeight(picHeight);
+        uploadPictureResult.setPicScale(picScale);
+        uploadPictureResult.setPicFormat(compressedCiObject.getFormat());
+        uploadPictureResult.setPicSize(compressedCiObject.getSize().longValue());
+        // 设置图片为压缩后的地址
+        uploadPictureResult.setUrl(cosClientConfig.getHost() + "/" + compressedCiObject.getKey());
+        // 设置缩略图
+        uploadPictureResult.setThumbnailUrl(cosClientConfig.getHost() + "/" + thumbnailCiObject.getKey());
+
+        return uploadPictureResult;
+    }
     /**
      * 处理文件来源
      */
