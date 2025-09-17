@@ -2,14 +2,12 @@ package com.example.wangtu.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.example.wangtu.model.dto.picture.PictureQueryRequest;
-import com.example.wangtu.model.dto.picture.PictureReviewRequest;
-import com.example.wangtu.model.dto.picture.PictureUploadByBatchRequest;
-import com.example.wangtu.model.dto.picture.PictureUploadRequest;
+import com.example.wangtu.model.dto.picture.*;
 import com.example.wangtu.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.wangtu.model.entity.User;
 import com.example.wangtu.model.vo.PictureVO;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,4 +62,34 @@ public interface PictureService extends IService<Picture> {
             PictureUploadByBatchRequest pictureUploadByBatchRequest,
             User loginUser
     );
+
+    /**
+    * @Description: 校验空间图片的权限 
+    * @Param: [loginUser, picture]
+    * @return: void
+    * @Author: trudh
+    * @Date: 2025/9/17
+    **/
+    void checkPicture(User loginUser,Picture picture);
+
+    /**
+    * @Description: 图片的删除
+    * @Param: [pictureId, loginUser]
+    * @return: void
+    * @Author: trudh
+    * @Date: 2025/9/17
+    **/
+    void deletePicture(long pictureId, User loginUser);
+
+    /**
+    * @Description: 更新图片 
+    * @Param: [pictureEditRequest, loginUser]
+    * @return: void
+    * @Author: trudh
+    * @Date: 2025/9/17
+    **/
+    void editPicture(PictureEditRequest pictureEditRequest, User loginUser);
+
+    @Async
+    void clearPictureFile(Picture oldPicture);
 }
