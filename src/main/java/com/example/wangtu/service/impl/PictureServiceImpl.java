@@ -108,7 +108,6 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
         }
 
-
         //判断新增还是删除
         Long pictureId = null;
         if(pictureUploadRequest != null){
@@ -165,6 +164,9 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             picName = pictureUploadRequest.getPicName();
         }
         picture.setName(picName);
+        if(spaceId != null){
+            picture.setSpaceId(spaceId);
+        }
         picture.setPicSize(uploadPictureResult.getPicSize());
         picture.setPicWidth(uploadPictureResult.getPicWidth());
         picture.setPicHeight(uploadPictureResult.getPicHeight());

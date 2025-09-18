@@ -124,6 +124,7 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
 
         queryWrapper.eq(ObjUtil.isNotEmpty(id), "id", id);
         queryWrapper.eq(ObjUtil.isNotEmpty(userId), "userId", userId);
+        queryWrapper.eq(ObjUtil.isNotEmpty(spaceLevel), "spaceLevel", spaceLevel);
 
 
 
