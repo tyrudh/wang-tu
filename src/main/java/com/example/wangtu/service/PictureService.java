@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * @author wang
@@ -92,4 +93,17 @@ public interface PictureService extends IService<Picture> {
 
     @Async
     void clearPictureFile(Picture oldPicture);
+
+    /**
+    * @Description: 按照图片的主色调进行搜索
+    * @Param: [spaceId, picColor, loginUser]
+    * @return: java.util.List<com.example.wangtu.model.vo.PictureVO>
+    * @Author: trudh
+    * @Date: 2025/9/19
+    **/
+    public List<PictureVO> searchPictureByColor(Long spaceId, String picColor, User loginUser);
+
+    //批量编辑图片
+    void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser);
+
 }
