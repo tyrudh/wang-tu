@@ -8,6 +8,9 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.example.wangtu.api.aliyunai.AliYunAiApi;
+import com.example.wangtu.api.aliyunai.model.CreateOutPaintingTaskRequest;
+import com.example.wangtu.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.example.wangtu.exception.BusinessException;
 import com.example.wangtu.exception.ErrorCode;
 import com.example.wangtu.exception.ThrowUtils;
@@ -77,6 +80,9 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
 
     @Resource
     private CosManager cosManager;
+
+    @Resource
+    private AliYunAiApi aliYunAiApi;
 
     /**
     * @Description: 图片上传
@@ -614,11 +620,62 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture>
             }
 
         });
+        // 批量重命名
+        String nameRule = pictureEditByBatchRequest.getNameRule();
+        fillPictureWithNameRule(pictureList, nameRule);
         // 5. 操作数据库进行批量更新
         boolean result = this.updateBatchById(pictureList);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR,"批量编辑上传失败");
 
     }
+
+    @Override
+    public CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser) {
+
+        // 1. 获取参数，校验参数
+        Long pictureId = createPictureOutPaintingTaskRequest.getPictureId();
+        Picture picture = Optional.ofNullable(this.getById(pictureId))
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND_ERROR));
+        // 2. 校验图片权限
+        checkPicture(loginUser, picture);
+        // 构造请求参数
+        CreateOutPaintingTaskRequest taskRequest = new CreateOutPaintingTaskRequest();
+        CreateOutPaintingTaskRequest.Input input = new CreateOutPaintingTaskRequest.Input();
+        input.setImageUrl(picture.getUrl());
+        taskRequest.setInput(input);
+        BeanUtil.copyProperties(createPictureOutPaintingTaskRequest, taskRequest);
+        // 创建任务
+        return aliYunAiApi.createOutPaintingTask(taskRequest);
+
+    }
+
+    /**
+    * @Description: 根据规则填充照片名字格式：图片{序号}
+    * @Param: [pictureList, nameRule]
+    * @return: void
+    * @Author: trudh
+    * @Date: 2025/9/20
+    **/
+    private void fillPictureWithNameRule(List<Picture> pictureList, String nameRule) {
+
+        if (StrUtil.isBlank(nameRule)|| CollUtil.isEmpty(pictureList)) {
+            return;
+        }
+        long count = 1;
+        try {
+            for (Picture picture : pictureList) {
+                picture.setName(nameRule.replaceAll("\\{序号}", String.valueOf(count++)));
+            }
+        }catch (Exception e){
+            log.error("名称填充错误",e);
+            throw new BusinessException(ErrorCode.OPERATION_ERROR,"名称填充错误");
+        }
+
+
+    }
+
+
+
 }
 
 

@@ -2,6 +2,7 @@ package com.example.wangtu.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.wangtu.api.aliyunai.model.CreateOutPaintingTaskResponse;
 import com.example.wangtu.model.dto.picture.*;
 import com.example.wangtu.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -106,4 +107,6 @@ public interface PictureService extends IService<Picture> {
     //批量编辑图片
     void editPictureByBatch(PictureEditByBatchRequest pictureEditByBatchRequest, User loginUser);
 
+    // 扩图
+    public CreateOutPaintingTaskResponse createPictureOutPaintingTask(CreatePictureOutPaintingTaskRequest createPictureOutPaintingTaskRequest, User loginUser);
 }
