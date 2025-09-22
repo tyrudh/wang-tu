@@ -32,7 +32,6 @@ public class SpaceQueryRequest extends PageRequest implements Serializable {
     private Integer spaceType;
 
 
-
     /**
      * 空间名称
      */
