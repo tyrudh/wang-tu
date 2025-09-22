@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.wangtu.constant.UserConstant;
 import com.example.wangtu.exception.BusinessException;
 import com.example.wangtu.exception.ErrorCode;
+import com.example.wangtu.manager.auth.StpKit;
 import com.example.wangtu.model.dto.user.UserQueryRequest;
 import com.example.wangtu.model.entity.User;
 import com.example.wangtu.model.enums.UserRoleEnum;
@@ -24,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.example.wangtu.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
 * @author wang
@@ -121,8 +124,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new BusinessException(ErrorCode.PARAMS_ERROR,"用户不存在");
         }
         //5返回用户信息，并且保存用户的登录态
-        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        request.getSession().setAttribute(USER_LOGIN_STATE, user);
 
+        // 额外保存到sa-token中
+        StpKit.SPACE.login(user.getId());
+        StpKit.SPACE.getSession().set(USER_LOGIN_STATE, user);
         return this.getLoginUserVo(user);
     }
 
@@ -131,7 +137,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (request == null) {
             return null;
         }
-        Object userOj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        Object userOj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User currentUser = (User) userOj;
         if (currentUser == null || currentUser.getId() == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
@@ -160,12 +166,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public Boolean userLoginOut(HttpServletRequest request) {
-        Object userOj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        Object userOj = request.getSession().getAttribute(USER_LOGIN_STATE);
         if (userOj == null) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR,"未登录");
         }
         //移除登录态
-        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
+        request.getSession().removeAttribute(USER_LOGIN_STATE);
         return true;
     }
 

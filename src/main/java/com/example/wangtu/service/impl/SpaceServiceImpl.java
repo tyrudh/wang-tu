@@ -14,14 +14,17 @@ import com.example.wangtu.model.dto.space.SpaceAddRequest;
 import com.example.wangtu.model.dto.space.SpaceQueryRequest;
 import com.example.wangtu.model.entity.Picture;
 import com.example.wangtu.model.entity.Space;
+import com.example.wangtu.model.entity.SpaceUser;
 import com.example.wangtu.model.entity.User;
 import com.example.wangtu.model.enums.SpaceLevelEnum;
+import com.example.wangtu.model.enums.SpaceRoleEnum;
 import com.example.wangtu.model.enums.SpaceTypeEnum;
 import com.example.wangtu.model.vo.PictureVO;
 import com.example.wangtu.model.vo.SpaceVO;
 import com.example.wangtu.model.vo.UserVO;
 import com.example.wangtu.service.SpaceService;
 import com.example.wangtu.mapper.SpaceMapper;
+import com.example.wangtu.service.SpaceUserService;
 import com.example.wangtu.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionManager;
@@ -47,6 +50,9 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private SpaceUserService spaceUserService;
 
     // 使用编程式事务
     @Resource
@@ -100,6 +106,17 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
                 // 写入数据库
                 boolean result = this.save(space);
                 ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+                // 如果是团队空间，关联新增团队成员记录
+                if (space.getSpaceType() == SpaceTypeEnum.TEAM.getValue()) {
+                    SpaceUser spaceUser = new SpaceUser();
+
+                    spaceUser.setSpaceId(space.getId());
+                    spaceUser.setUserId(userId);
+                    spaceUser.setSpaceRole(SpaceRoleEnum.ADMIN.getValue());
+                    result = spaceUserService.save(spaceUser);
+                    ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR,"创建团队成员记录失败");
+                }
+
                 // 返回新写入的数据 id
                 return space.getId();
             });
