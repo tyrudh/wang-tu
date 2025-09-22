@@ -26,6 +26,11 @@ public class SpaceQueryRequest extends PageRequest implements Serializable {
      * 用户 id
      */
     private Long userId;
+    /**
+     * 空间类型：0-私有 1-团队
+     */
+    private Integer spaceType;
+
 
     /**
      * 空间名称

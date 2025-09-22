@@ -34,6 +34,9 @@ public interface SpaceService extends IService<Space> {
 
     public void fillSpaceBySpaceLevel(Space space);
 
+    // 检查权限仅本人或管理员
+    void checkSpaceAuth(User loginUser,Space space);
+
 
 
 }
