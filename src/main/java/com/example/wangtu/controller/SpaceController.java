@@ -11,6 +11,7 @@ import com.example.wangtu.constant.UserConstant;
 import com.example.wangtu.exception.BusinessException;
 import com.example.wangtu.exception.ErrorCode;
 import com.example.wangtu.exception.ThrowUtils;
+import com.example.wangtu.manager.auth.SpaceUserAuthManager;
 import com.example.wangtu.model.dto.space.*;
 import com.example.wangtu.model.entity.Space;
 import com.example.wangtu.model.entity.User;
@@ -22,6 +23,7 @@ import com.example.wangtu.service.UserService;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.util.DigestUtils;
@@ -52,6 +54,8 @@ public class SpaceController {
 
     @Resource
     private UserService userService;
+    @Autowired
+    private SpaceUserAuthManager spaceUserAuthManager;
 
 
     /**
@@ -138,8 +142,12 @@ public class SpaceController {
         // 查询数据库
         Space space = spaceService.getById(id);
         ThrowUtils.throwIf(space == null, ErrorCode.NOT_FOUND_ERROR);
+        SpaceVO spaceVO = spaceService.getSpaceVO(space, request);
+        User loginUser = userService.getLoginUser(request);
+        List<String> permissionList = spaceUserAuthManager.getPermissionList(space, loginUser);
+        spaceVO.setPermissionList(permissionList);
         // 获取封装类
-        return ResultUtils.success(spaceService.getSpaceVO(space, request));
+        return ResultUtils.success(spaceVO);
     }
 
     /**

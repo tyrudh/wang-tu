@@ -26,6 +26,8 @@ import com.example.wangtu.service.SpaceService;
 import com.example.wangtu.mapper.SpaceMapper;
 import com.example.wangtu.service.SpaceUserService;
 import com.example.wangtu.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +59,11 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
     // 使用编程式事务
     @Resource
     private TransactionTemplate transactionTemplate;
+
+    // 为方便开发先注释点分库分表
+//    @Resource
+//    @Lazy
+//    private DynamicShardingManager dynamicShardingManager;
 
     /**
     * @Description: 创建空间 
@@ -116,6 +123,9 @@ public class SpaceServiceImpl extends ServiceImpl<SpaceMapper, Space>
                     result = spaceUserService.save(spaceUser);
                     ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR,"创建团队成员记录失败");
                 }
+                // 为方便开发先祝注释点分库分表
+//                // 动态建表(仅对团队空间生效)
+//                dynamicShardingManager.createSpacePictureTable(space);
 
                 // 返回新写入的数据 id
                 return space.getId();
