@@ -1,12 +1,12 @@
 package com.example.wangtu.controller;
 
-import com.example.wangtu.annotation.AuthCheck;
-import com.example.wangtu.common.BaseResponse;
-import com.example.wangtu.common.ResultUtils;
-import com.example.wangtu.constant.UserConstant;
+import com.example.wangpicture.infrastructure.annotation.AuthCheck;
+import com.example.wangpicture.infrastructure.common.BaseResponse;
+import com.example.wangpicture.infrastructure.common.ResultUtils;
+import com.example.wangpicture.domain.user.constant.UserConstant;
 import com.example.wangtu.exception.BusinessException;
 import com.example.wangtu.exception.ErrorCode;
-import com.example.wangtu.manager.CosManager;
+import com.example.wangpicture.infrastructure.api.CosManager;
 import com.qcloud.cos.model.COSObject;
 import com.qcloud.cos.model.COSObjectInputStream;
 import com.qcloud.cos.utils.IOUtils;

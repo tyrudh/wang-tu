@@ -1,6 +1,6 @@
 package com.example.wangtu.manager.websocket.model;
 
-import com.example.wangtu.model.vo.UserVO;
+import com.example.wangpicture.interfaces.vo.user.UserVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.example.wangtu.controller;
 
-import com.example.wangtu.common.BaseResponse;
-import com.example.wangtu.common.ResultUtils;
+import com.example.wangpicture.infrastructure.common.BaseResponse;
+import com.example.wangpicture.infrastructure.common.ResultUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

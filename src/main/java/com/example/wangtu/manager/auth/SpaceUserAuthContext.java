@@ -7,9 +7,9 @@ package com.example.wangtu.manager.auth;
  * @date 2025/9/22 21:18
  */
 
-import com.example.wangtu.model.entity.Picture;
-import com.example.wangtu.model.entity.Space;
-import com.example.wangtu.model.entity.SpaceUser;
+import com.example.wangpicture.domain.picture.entity.Picture;
+import com.example.wangpicture.domain.space.entity.Space;
+import com.example.wangpicture.domain.space.entity.SpaceUser;
 import lombok.Data;
 
 /**

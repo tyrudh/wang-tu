@@ -5,8 +5,8 @@ import com.example.wangtu.manager.websocket.PictureEditHandler;
 import com.example.wangtu.manager.websocket.model.PictureEditMessageTypeEnum;
 import com.example.wangtu.manager.websocket.model.PictureEditRequestMessage;
 import com.example.wangtu.manager.websocket.model.PictureEditResponseMessage;
-import com.example.wangtu.model.entity.User;
-import com.example.wangtu.service.UserService;
+import com.example.wangpicture.domain.user.entity.User;
+import com.example.wangpicture.application.service.UserApplicationService;
 import com.lmax.disruptor.WorkHandler;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -30,7 +30,7 @@ public class PictureEditEventWorkHandler implements WorkHandler<PictureEditEvent
     private PictureEditHandler pictureEditHandler;
 
     @Resource
-    private UserService userService;
+    private UserApplicationService userApplicationService;
 
     @Override
     public void onEvent(PictureEditEvent event) throws Exception {
@@ -56,7 +56,7 @@ public class PictureEditEventWorkHandler implements WorkHandler<PictureEditEvent
                 PictureEditResponseMessage pictureEditResponseMessage = new PictureEditResponseMessage();
                 pictureEditResponseMessage.setType(PictureEditMessageTypeEnum.ERROR.getValue());
                 pictureEditResponseMessage.setMessage("消息类型错误");
-                pictureEditResponseMessage.setUser(userService.getUserVO(user));
+                pictureEditResponseMessage.setUser(userApplicationService.getUserVO(user));
                 session.sendMessage(new TextMessage(JSONUtil.toJsonStr(pictureEditResponseMessage)));
         }
     }

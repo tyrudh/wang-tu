@@ -1,7 +1,7 @@
 package com.example.wangtu.manager.websocket.disruptor;
 
 import com.example.wangtu.manager.websocket.model.PictureEditRequestMessage;
-import com.example.wangtu.model.entity.User;
+import com.example.wangpicture.domain.user.entity.User;
 import lombok.Data;
 import org.springframework.web.socket.WebSocketSession;
 

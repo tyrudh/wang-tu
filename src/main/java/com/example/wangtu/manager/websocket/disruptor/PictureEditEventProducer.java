@@ -1,7 +1,7 @@
 package com.example.wangtu.manager.websocket.disruptor;
 
 import com.example.wangtu.manager.websocket.model.PictureEditRequestMessage;
-import com.example.wangtu.model.entity.User;
+import com.example.wangpicture.domain.user.entity.User;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import lombok.extern.slf4j.Slf4j;

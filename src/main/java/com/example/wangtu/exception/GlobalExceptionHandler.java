@@ -3,8 +3,8 @@ package com.example.wangtu.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.exception.NotPermissionException;
-import com.example.wangtu.common.BaseResponse;
-import com.example.wangtu.common.ResultUtils;
+import com.example.wangpicture.infrastructure.common.BaseResponse;
+import com.example.wangpicture.infrastructure.common.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
