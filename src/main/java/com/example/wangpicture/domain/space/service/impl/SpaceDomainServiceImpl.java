@@ -8,8 +8,8 @@ import com.example.wangpicture.domain.space.service.SpaceDomainService;
 import com.example.wangpicture.domain.space.valueobject.SpaceLevelEnum;
 import com.example.wangpicture.domain.user.entity.User;
 import com.example.wangpicture.interfaces.dto.space.SpaceQueryRequest;
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.BusinessException;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
 import org.springframework.stereotype.Service;
 
 /**

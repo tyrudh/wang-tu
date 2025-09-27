@@ -1,7 +1,7 @@
 package com.example.wangpicture.infrastructure.api.imagesearch.sub;
 
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.BusinessException;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

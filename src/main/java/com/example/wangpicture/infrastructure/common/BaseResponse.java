@@ -1,6 +1,6 @@
 package com.example.wangpicture.infrastructure.common;
 
-import com.example.wangtu.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
 import lombok.Data;
 
 import java.io.Serializable;

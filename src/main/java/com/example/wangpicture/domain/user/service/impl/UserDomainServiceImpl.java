@@ -13,10 +13,10 @@ import com.example.wangpicture.domain.user.valueobject.UserRoleEnum;
 import com.example.wangpicture.interfaces.dto.user.UserQueryRequest;
 import com.example.wangpicture.interfaces.vo.user.LoginUserVO;
 import com.example.wangpicture.interfaces.vo.user.UserVO;
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
-import com.example.wangtu.exception.ThrowUtils;
-import com.example.wangtu.manager.auth.StpKit;
+import com.example.wangpicture.infrastructure.exception.BusinessException;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.ThrowUtils;
+import com.example.wangpicture.shared.auth.StpKit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -180,8 +180,10 @@ public class UserDomainServiceImpl implements UserDomainService {
     @Override
     public String getEncryptPassword(String userPassword) {
         // 盐值，混淆密码
-        final String SALT = "yupi";
-        return DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
+        //加盐操作
+        final String salt = "tu";
+
+        return DigestUtils.md5DigestAsHex((userPassword+salt).getBytes());
     }
 
     @Override

@@ -10,8 +10,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.example.wangtu.exception.ErrorCode;
-import com.example.wangtu.exception.ThrowUtils;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.ThrowUtils;
 import lombok.Data;
 
 /**

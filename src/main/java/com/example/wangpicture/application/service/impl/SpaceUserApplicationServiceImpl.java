@@ -1,15 +1,14 @@
 package com.example.wangpicture.application.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.wangpicture.application.service.SpaceApplicationService;
 import com.example.wangpicture.domain.space.service.SpaceUserDomainService;
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
-import com.example.wangtu.exception.ThrowUtils;
+import com.example.wangpicture.infrastructure.exception.BusinessException;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.ThrowUtils;
 import com.example.wangpicture.interfaces.dto.spaceuser.SpaceUserAddRequest;
 import com.example.wangpicture.interfaces.dto.spaceuser.SpaceUserQueryRequest;
 import com.example.wangpicture.domain.space.entity.Space;

@@ -4,9 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.*;
 import com.example.wangpicture.domain.space.valueobject.SpaceLevelEnum;
 import com.example.wangpicture.domain.space.valueobject.SpaceTypeEnum;
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
-import com.example.wangtu.exception.ThrowUtils;
+import com.example.wangpicture.infrastructure.exception.BusinessException;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.ThrowUtils;
 import lombok.Data;
 
 import java.io.Serializable;

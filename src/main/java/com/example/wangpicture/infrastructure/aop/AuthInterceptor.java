@@ -2,8 +2,8 @@ package com.example.wangpicture.infrastructure.aop;
 
 import com.example.wangpicture.application.service.UserApplicationService;
 import com.example.wangpicture.infrastructure.annotation.AuthCheck;
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.BusinessException;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
 import com.example.wangpicture.domain.user.entity.User;
 import com.example.wangpicture.domain.user.valueobject.UserRoleEnum;
 import org.aspectj.lang.ProceedingJoinPoint;

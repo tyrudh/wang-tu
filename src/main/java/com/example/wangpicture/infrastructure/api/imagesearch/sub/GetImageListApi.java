@@ -6,8 +6,8 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.example.wangpicture.infrastructure.api.imagesearch.model.ImageSearchResult;
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.BusinessException;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

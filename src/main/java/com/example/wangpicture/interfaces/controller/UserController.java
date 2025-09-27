@@ -9,18 +9,15 @@ import com.example.wangpicture.interfaces.assembler.UserAssembler;
 import com.example.wangpicture.interfaces.dto.user.*;
 import com.example.wangpicture.domain.user.constant.UserConstant;
 import com.example.wangpicture.interfaces.vo.user.LoginUserVO;
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
-import com.example.wangtu.exception.ThrowUtils;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.ThrowUtils;
 import com.example.wangpicture.domain.user.entity.User;
 import com.example.wangpicture.interfaces.vo.user.UserVO;
 import com.example.wangpicture.application.service.UserApplicationService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * @author wang

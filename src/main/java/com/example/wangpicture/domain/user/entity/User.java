@@ -10,8 +10,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import com.example.wangpicture.domain.user.valueobject.UserRoleEnum;
-import com.example.wangtu.exception.BusinessException;
-import com.example.wangtu.exception.ErrorCode;
+import com.example.wangpicture.infrastructure.exception.BusinessException;
+import com.example.wangpicture.infrastructure.exception.ErrorCode;
 import lombok.Data;
 
 /**
